@@ -1,7 +1,9 @@
 
+#define ffmpeg 1
+
 Name:           k3b-extras-freeworld
 Version:        1.0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Additional codec plugins for the k3b CD/DVD burning application
 
 Group:          Applications/Multimedia
@@ -13,9 +15,12 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} 
 ExcludeArch:    s390 s390x
 
 BuildRequires:  kdelibs3-devel
-BuildRequires:  libmad-devel taglib-devel lame-devel
-BuildRequires:  ffmpeg-devel libmusicbrainz-devel
+BuildRequires:  lame-devel
+BuildRequires:  libmad-devel
+%{?ffmpeg:BuildRequires:  ffmpeg-devel}
+BuildRequires:  libmusicbrainz-devel
 BuildRequires:  gettext
+BuildRequires:  taglib-devel
 
 Obsoletes:      k3b-mp3 < 0.12.10 
 Provides:       k3b-mp3 = %{version}-%{release}
@@ -65,7 +70,7 @@ popd
 
 # Now build individual plugins.
 make %makeflags -C plugins/decoder/mp3
-make %makeflags -C plugins/decoder/ffmpeg
+%{?ffmpeg:make %makeflags -C plugins/decoder/ffmpeg}
 make %makeflags -C plugins/encoder/lame
 
 
@@ -73,7 +78,7 @@ make %makeflags -C plugins/encoder/lame
 rm -rf $RPM_BUILD_ROOT
 
 make install DESTDIR=$RPM_BUILD_ROOT -C plugins/decoder/mp3
-make install DESTDIR=$RPM_BUILD_ROOT -C plugins/decoder/ffmpeg
+%{?ffmpeg:make install DESTDIR=$RPM_BUILD_ROOT -C plugins/decoder/ffmpeg}
 make install DESTDIR=$RPM_BUILD_ROOT -C plugins/encoder/lame
 
 
@@ -83,15 +88,18 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%{_libdir}/kde3/libk3bmaddecoder.*
-%{_libdir}/kde3/libk3bffmpegdecoder.*
+%{?ffmpeg:%{_libdir}/kde3/libk3bffmpegdecoder.*}
+%{?ffmpeg:%{_datadir}/apps/k3b/plugins/k3bffmpegdecoder.plugin}
 %{_libdir}/kde3/libk3blameencoder.*
-%{_datadir}/apps/k3b/plugins/k3bmaddecoder.plugin
-%{_datadir}/apps/k3b/plugins/k3bffmpegdecoder.plugin
 %{_datadir}/apps/k3b/plugins/k3blameencoder.plugin
+%{_libdir}/kde3/libk3bmaddecoder.*
+%{_datadir}/apps/k3b/plugins/k3bmaddecoder.plugin
 
 
 %changelog
+* Mon Sep 15 2008 Rex Dieter <rdieter@fedoraproject.org> - 1.0.5-2
+- omit ffmpeg support (for now)
+
 * Mon Sep 15 2008 Rex Dieter <rdieter@fedoraproject.org> - 1.0.5-1
 - k3b-extras-freeworld for rpmfusion
 
