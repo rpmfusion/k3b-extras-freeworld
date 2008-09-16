@@ -1,0 +1,51 @@
+diff -up k3b-1.0.5/plugins/decoder/ffmpeg/configure.in.in.ffmpeg k3b-1.0.5/plugins/decoder/ffmpeg/configure.in.in
+--- k3b-1.0.5/plugins/decoder/ffmpeg/configure.in.in.ffmpeg	2008-05-27 03:23:36.000000000 -0500
++++ k3b-1.0.5/plugins/decoder/ffmpeg/configure.in.in	2008-09-16 15:24:53.000000000 -0500
+@@ -21,8 +21,8 @@ if test "$ac_cv_use_ffmpeg" = "yes"; the
+ 	AC_LANG_CPLUSPLUS
+ 	AC_COMPILE_IFELSE( 
+ 		extern "C" {
+-		#include <ffmpeg/avformat.h>
+-		#include <ffmpeg/avcodec.h>
++		#include <libavformat/avformat.h>
++		#include <libavcodec/avcodec.h>
+ 		}
+ 
+ 		int main() {
+@@ -36,8 +36,8 @@ if test "$ac_cv_use_ffmpeg" = "yes"; the
+ 	LIBS="-lavformat -lavcodec $LIBS"
+ 	AC_LINK_IFELSE( 
+ 		extern "C" {
+-		#include <ffmpeg/avformat.h>
+-		#include <ffmpeg/avcodec.h>
++		#include <libavformat/avformat.h>
++		#include <libavcodec/avcodec.h>
+ 		}
+ 
+ 		int main() {
+diff -up k3b-1.0.5/plugins/decoder/ffmpeg/k3bffmpegdecoder.cpp.ffmpeg k3b-1.0.5/plugins/decoder/ffmpeg/k3bffmpegdecoder.cpp
+--- k3b-1.0.5/plugins/decoder/ffmpeg/k3bffmpegdecoder.cpp.ffmpeg	2008-05-27 03:23:36.000000000 -0500
++++ k3b-1.0.5/plugins/decoder/ffmpeg/k3bffmpegdecoder.cpp	2008-09-16 15:21:12.000000000 -0500
+@@ -22,7 +22,7 @@
+ #include <k3bpluginfactory.h>
+ 
+ extern "C" {
+-#include <ffmpeg/avcodec.h>
++#include <libavcodec/avcodec.h>
+ }
+ 
+ #include <math.h>
+diff -up k3b-1.0.5/plugins/decoder/ffmpeg/k3bffmpegwrapper.cpp.ffmpeg k3b-1.0.5/plugins/decoder/ffmpeg/k3bffmpegwrapper.cpp
+--- k3b-1.0.5/plugins/decoder/ffmpeg/k3bffmpegwrapper.cpp.ffmpeg	2008-05-27 03:23:36.000000000 -0500
++++ k3b-1.0.5/plugins/decoder/ffmpeg/k3bffmpegwrapper.cpp	2008-09-16 15:23:01.000000000 -0500
+@@ -18,8 +18,8 @@
+ #include "k3bffmpegwrapper.h"
+ 
+ extern "C" {
+-#include <ffmpeg/avcodec.h>
+-#include <ffmpeg/avformat.h>
++#include <libavcodec/avcodec.h>
++#include <libavformat/avformat.h>
+ }
+ 
+ #include <string.h>

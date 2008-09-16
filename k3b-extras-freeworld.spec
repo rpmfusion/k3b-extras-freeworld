@@ -1,5 +1,10 @@
 
-#define ffmpeg 1
+%define kdelibs3 kdelibs
+%if 0%{?fedora} > 6
+%define kdelibs3 kdelibs3
+%define ffmpeg ffmpeg
+%define _with_ffmpeg --with-ffmpeg
+%endif
 
 Name:           k3b-extras-freeworld
 Version:        1.0.5
@@ -12,12 +17,14 @@ URL:            http://www.k3b.org
 Source0:        http://downloads.sourceforge.net/sourceforge/k3b/k3b-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 
+Patch1: k3b-1.0.5-ffmpeg.patch
+
 ExcludeArch:    s390 s390x
 
-BuildRequires:  kdelibs3-devel
+BuildRequires:  %{kdelibs3}-devel
 BuildRequires:  lame-devel
 BuildRequires:  libmad-devel
-%{?ffmpeg:BuildRequires:  ffmpeg-devel}
+%{?ffmpeg:BuildRequires:  %{ffmpeg}-devel automake}
 BuildRequires:  libmusicbrainz-devel
 BuildRequires:  gettext
 BuildRequires:  taglib-devel
@@ -40,18 +47,30 @@ handle CD/DVD burning application.
 %prep
 %setup -q -n k3b-%{version}
 
+%if 0%{?ffmpeg:1}
+%patch1 -p1 -b .ffmpeg
+make -f admin/Makefile.common
+%endif
+
 
 %build
 unset QTDIR
 [ -z "$QTDIR" ] && . /etc/profile.d/qt.sh
-%configure --disable-rpath \
-	--with-external-libsamplerate=no \
-	--without-oggvorbis \
-	--without-flac \
-	--without-sndfile \
-	--without-hal \
-	--without-musepack \
-	--with-k3bsetup=no
+
+%{?ffmpeg:export CPPFLAGS=-I%{_includedir}/ffmpeg}
+
+%configure \
+  --disable-rpath \
+  --with-external-libsamplerate=no \
+  --without-oggvorbis \
+  --without-flac \
+  --without-sndfile \
+  --without-hal \
+  --without-musepack \
+  --with-k3bsetup=no \
+  %{?_with_ffmpeg} %{!?_with_ffmpeg:--without-ffmpeg} \
+  --with-lame \
+  --with-libmad
 
 %define makeflags %{?_smp_mflags}%{nil}
 
@@ -97,6 +116,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep 16 2008 Rex Dieter <rdieter@fedoraproject.org> - 1.0.5-3
+- re-enable ffmpeg support
+
 * Mon Sep 15 2008 Rex Dieter <rdieter@fedoraproject.org> - 1.0.5-2
 - omit ffmpeg support (for now)
 
