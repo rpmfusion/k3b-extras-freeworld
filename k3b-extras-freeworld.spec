@@ -8,7 +8,7 @@
 
 Name:           k3b-extras-freeworld
 Version:        1.0.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Additional codec plugins for the k3b CD/DVD burning application
 
 Group:          Applications/Multimedia
@@ -23,6 +23,7 @@ ExcludeArch:    s390 s390x
 
 BuildRequires:  %{kdelibs3}-devel
 BuildRequires:  lame-devel
+BuildRequires:  libdvdread-devel
 BuildRequires:  libmad-devel
 %{?ffmpeg:BuildRequires:  %{ffmpeg}-devel automake}
 BuildRequires:  libmusicbrainz-devel
@@ -47,6 +48,12 @@ handle CD/DVD burning application.
 %prep
 %setup -q -n k3b-%{version}
 
+# FIXME? -- Rex
+%if 0%{?fedora} > 9
+sed -i.libdvdread -e 's|dvdread/|libdvdread/|' \
+  libk3b/videodvd/configure.in.in libk3b/videodvd/k3bvideodvd.cpp configure
+%endif
+
 %if 0%{?ffmpeg:1}
 %patch1 -p1 -b .ffmpeg
 make -f admin/Makefile.common
@@ -62,6 +69,7 @@ unset QTDIR
   --enable-new-ldflags \
   --disable-debug --disable-warnings \
   --disable-dependency-tracking --enable-final \
+  --with-libdvdread \
   --with-external-libsamplerate=no \
   --without-oggvorbis \
   --without-flac \
