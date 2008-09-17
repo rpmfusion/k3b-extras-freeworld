@@ -8,7 +8,7 @@
 
 Name:           k3b-extras-freeworld
 Version:        1.0.5
-Release:        5%{?dist}
+Release:        4%{?dist}
 Summary:        Additional codec plugins for the k3b CD/DVD burning application
 
 Group:          Applications/Multimedia
