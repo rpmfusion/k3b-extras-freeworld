@@ -23,6 +23,7 @@ ExcludeArch:    s390 s390x
 
 BuildRequires:  %{kdelibs3}-devel
 BuildRequires:  lame-devel
+BuildRequires:  libdvdread-devel
 BuildRequires:  libmad-devel
 %{?ffmpeg:BuildRequires:  %{ffmpeg}-devel automake}
 BuildRequires:  libmusicbrainz-devel
@@ -62,6 +63,7 @@ unset QTDIR
   --enable-new-ldflags \
   --disable-debug --disable-warnings \
   --disable-dependency-tracking --enable-final \
+  --with-libdvdread \
   --with-external-libsamplerate=no \
   --without-oggvorbis \
   --without-flac \
