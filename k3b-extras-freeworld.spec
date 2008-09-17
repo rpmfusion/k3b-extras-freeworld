@@ -8,11 +8,11 @@
 
 Name:           k3b-extras-freeworld
 Version:        1.0.5
-Release:        2%{?dist}
+Release:        4%{?dist}
 Summary:        Additional codec plugins for the k3b CD/DVD burning application
 
 Group:          Applications/Multimedia
-License:        GPL
+License:        GPLv2+
 URL:            http://www.k3b.org
 Source0:        http://downloads.sourceforge.net/sourceforge/k3b/k3b-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
@@ -57,10 +57,11 @@ make -f admin/Makefile.common
 unset QTDIR
 [ -z "$QTDIR" ] && . /etc/profile.d/qt.sh
 
-%{?ffmpeg:export CPPFLAGS=-I%{_includedir}/ffmpeg}
-
 %configure \
   --disable-rpath \
+  --enable-new-ldflags \
+  --disable-debug --disable-warnings \
+  --disable-dependency-tracking --enable-final \
   --with-external-libsamplerate=no \
   --without-oggvorbis \
   --without-flac \
@@ -116,6 +117,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Sep 17 2008 Rex Dieter <rdieter@fedoraproject.org> - 1.0.5-4
+- better pkgconfig-based ffmpeg patch
+- optimize configure
+- License: GPLv2+
+
 * Tue Sep 16 2008 Rex Dieter <rdieter@fedoraproject.org> - 1.0.5-3
 - re-enable ffmpeg support
 
