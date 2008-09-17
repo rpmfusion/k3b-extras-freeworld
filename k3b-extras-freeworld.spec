@@ -48,12 +48,6 @@ handle CD/DVD burning application.
 %prep
 %setup -q -n k3b-%{version}
 
-# FIXME? -- Rex
-%if 0%{?fedora} > 9
-sed -i.libdvdread -e 's|dvdread/|libdvdread/|' \
-  libk3b/videodvd/configure.in.in libk3b/videodvd/k3bvideodvd.cpp configure
-%endif
-
 %if 0%{?ffmpeg:1}
 %patch1 -p1 -b .ffmpeg
 make -f admin/Makefile.common
