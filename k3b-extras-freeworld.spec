@@ -8,7 +8,7 @@
 
 Name:           k3b-extras-freeworld
 Version:        1.0.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Additional codec plugins for the k3b CD/DVD burning application
 
 Group:          Applications/Multimedia
@@ -18,6 +18,7 @@ Source0:        http://downloads.sourceforge.net/sourceforge/k3b/k3b-%{version}.
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 
 Patch1: k3b-1.0.5-ffmpeg.patch
+Patch2: k3b-lavc52.patch
 
 ExcludeArch:    s390 s390x
 
@@ -50,6 +51,7 @@ handle CD/DVD burning application.
 
 %if 0%{?ffmpeg:1}
 %patch1 -p1 -b .ffmpeg
+%patch2 -p1 -b .lavc52
 make -f admin/Makefile.common
 %endif
 
@@ -119,6 +121,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Dec 15 2008 Dominik Mierzejewski <rpm@greysector.net> - 1.0.5-5
+- fix build with current ffmpeg
+
 * Wed Sep 17 2008 Rex Dieter <rdieter@fedoraproject.org> - 1.0.5-4
 - better pkgconfig-based ffmpeg patch
 - optimize configure
