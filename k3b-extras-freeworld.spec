@@ -8,7 +8,7 @@
 
 Name:           k3b-extras-freeworld
 Version:        1.0.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Additional codec plugins for the k3b CD/DVD burning application
 
 Group:          Applications/Multimedia
@@ -121,6 +121,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Mar 29 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 1.0.5-6
+- rebuild for new F11 features
+
 * Mon Dec 15 2008 Dominik Mierzejewski <rpm@greysector.net> - 1.0.5-5
 - fix build with current ffmpeg
 
