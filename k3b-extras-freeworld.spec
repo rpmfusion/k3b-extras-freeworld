@@ -17,8 +17,11 @@ URL:            http://www.k3b.org
 Source0:        http://downloads.sourceforge.net/sourceforge/k3b/k3b-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 
-Patch1: k3b-1.0.5-ffmpeg.patch
-Patch2: k3b-lavc52.patch
+## upstreamable
+Patch50: k3b-1.0.5-ffmpeg.patch
+
+## upstream
+Patch100: k3b-lavc52.patch
 
 ExcludeArch:    s390 s390x
 
@@ -50,8 +53,8 @@ handle CD/DVD burning application.
 %setup -q -n k3b-%{version}
 
 %if 0%{?ffmpeg:1}
-%patch1 -p1 -b .ffmpeg
-%patch2 -p1 -b .lavc52
+%patch50 -p1 -b .ffmpeg
+%patch100 -p1 -b .lavc52
 make -f admin/Makefile.common
 %endif
 
@@ -77,7 +80,7 @@ unset QTDIR
   --with-lame \
   --with-libmad
 
-%define makeflags %{?_smp_mflags}%{nil}
+%global makeflags %{?_smp_mflags}%{nil}
 
 # We need just a few k3b core libs.
 # As FC k3b package no longer includes the libtool archives,
