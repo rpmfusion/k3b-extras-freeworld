@@ -30,7 +30,7 @@ BuildRequires:  %{kdelibs3}-devel
 BuildRequires:  lame-devel
 BuildRequires:  libdvdread-devel
 BuildRequires:  libmad-devel
-%{?ffmpeg:BuildRequires:  %{ffmpeg}-devel automake}
+%{?ffmpeg:BuildRequires:  %{ffmpeg}-devel automake libtool}
 BuildRequires:  libmusicbrainz-devel
 BuildRequires:  gettext
 BuildRequires:  taglib-devel
@@ -56,6 +56,10 @@ handle CD/DVD burning application.
 %if 0%{?ffmpeg:1}
 %patch50 -p1 -b .ffmpeg
 %patch100 -p1 -b .lavc52
+
+# hack/fix for newer automake
+sed -iautomake -e 's|automake\*1.10\*|automake\*1.1[0-5]\*|' admin/cvs.sh
+
 make -f admin/Makefile.common
 %endif
 
