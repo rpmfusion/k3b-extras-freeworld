@@ -1,46 +1,41 @@
 
-%define kdelibs3 kdelibs
-%if 0%{?fedora} > 6
-%define kdelibs3 kdelibs3
-%define ffmpeg ffmpeg
-%define _with_ffmpeg --with-ffmpeg
-%endif
+%define pre alpha4
 
-Name:           k3b-extras-freeworld
-Epoch:          1
-Version:        1.0.5
-Release:        7%{?dist}
-Summary:        Additional codec plugins for the k3b CD/DVD burning application
+Name:    k3b-extras-freeworld
+Summary: Additional codec plugins for the k3b CD/DVD burning application
+Epoch:   1
+Version: 1.69.0
+Release: 1%{?dist}
 
-Group:          Applications/Multimedia
-License:        GPLv2+
-URL:            http://www.k3b.org
-Source0:        http://downloads.sourceforge.net/sourceforge/k3b/k3b-%{version}.tar.bz2
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
+Group:   Applications/Archiving
+License: GPLv2+
+URL:     http://www.k3b.org/
+Source0: http://downloads.sourceforge.net/sourceforge/k3b/k3b-%{version}%{pre}.tar.bz2
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+# TODO: bugzilla/document
+ExcludeArch: s390 s390x
 
-## upstreamable
-Patch50: k3b-1.0.5-ffmpeg.patch
+## upstreamable patches
 
-## upstream
-Patch100: k3b-lavc52.patch
+BuildRequires: cmake
+BuildRequires: flac-devel
+BuildRequires: gettext
+BuildRequires: kdelibs4-devel
+BuildRequires: kdemultimedia-devel
+BuildRequires: libdvdread-devel
+BuildRequires: libmpcdec-devel
+BuildRequires: libmusicbrainz-devel
+BuildRequires: libsamplerate-devel
+BuildRequires: libsndfile-devel
+BuildRequires: libvorbis-devel
+# needed by k3bsetup
+#BuildRequires: polkit-qt-devel
+BuildRequires: taglib-devel
 
-ExcludeArch:    s390 s390x
-
-BuildRequires:  %{kdelibs3}-devel
+BuildRequires:  ffmpeg-devel
 BuildRequires:  lame-devel
 BuildRequires:  libdvdread-devel
 BuildRequires:  libmad-devel
-%{?ffmpeg:BuildRequires:  %{ffmpeg}-devel automake libtool}
-BuildRequires:  libmusicbrainz-devel
-BuildRequires:  gettext
-BuildRequires:  taglib-devel
-
-Obsoletes:      k3b-mp3 < 0.12.10 
-Provides:       k3b-mp3 = %{version}-%{release}
-
-# livna upgrade
-Obsoletes: k3b-extras-nonfree < 1.0.4-3
-Provides:  k3b-extras-nonfree = %{version}-%{release}
 
 Requires:       k3b >= %{version}
 
@@ -50,87 +45,60 @@ Additional decoder/encoder plugins for k3b, a feature-rich and easy to
 handle CD/DVD burning application.
 
 
+
 %prep
 %setup -q -n k3b-%{version}
 
-%if 0%{?ffmpeg:1}
-%patch50 -p1 -b .ffmpeg
-%patch100 -p1 -b .lavc52
-
-# hack/fix for newer automake
-sed -iautomake -e 's|automake\*1.10\*|automake\*1.1[0-5]\*|' admin/cvs.sh
-
-make -f admin/Makefile.common
-%endif
-
 
 %build
-unset QTDIR
-[ -z "$QTDIR" ] && . /etc/profile.d/qt.sh
 
-%configure \
-  --disable-rpath \
-  --enable-new-ldflags \
-  --disable-debug --disable-warnings \
-  --disable-dependency-tracking --enable-final \
-  --with-libdvdread \
-  --with-external-libsamplerate=no \
-  --without-oggvorbis \
-  --without-flac \
-  --without-sndfile \
-  --without-hal \
-  --without-musepack \
-  --with-k3bsetup=no \
-  %{?_with_ffmpeg} %{!?_with_ffmpeg:--without-ffmpeg} \
-  --with-lame \
-  --with-libmad
-
-%global makeflags %{?_smp_mflags}%{nil}
-
-# We need just a few k3b core libs.
-# As FC k3b package no longer includes the libtool archives,
-# we cannot simply link them anymore.
-pushd libk3bdevice
-#ln -s %{_libdir}/libk3bdevice.la libk3bdevice.la
-make %makeflags
+mkdir -p %{_target_platform}
+pushd %{_target_platform}
+%{cmake_kde4} \
+  ..
 popd
 
-pushd libk3b
-#ln -s %{_libdir}/libk3b.la libk3b.la
-make %makeflags
-popd
+#make %{?_smp_mflags} -C %{_target_platform}/libk3bdevice
+#make %{?_smp_mflags} -C %{_target_platform}/libk3b
+make %{?_smp_mflags} -C %{_target_platform}/plugins/decoder/ffmpeg
+make %{?_smp_mflags} -C %{_target_platform}/plugins/decoder/mp3
+make %{?_smp_mflags} -C %{_target_platform}/plugins/encoder/lame
 
-# Now build individual plugins.
-make %makeflags -C plugins/decoder/mp3
-%{?ffmpeg:make %makeflags -C plugins/decoder/ffmpeg}
-make %makeflags -C plugins/encoder/lame
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
-make install DESTDIR=$RPM_BUILD_ROOT -C plugins/decoder/mp3
-%{?ffmpeg:make install DESTDIR=$RPM_BUILD_ROOT -C plugins/decoder/ffmpeg}
-make install DESTDIR=$RPM_BUILD_ROOT -C plugins/encoder/lame
+make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/decoder/ffmpeg
+make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/decoder/mp3
+make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/encoder/lame
 
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 
-%files
+%files 
 %defattr(-,root,root,-)
-%{?ffmpeg:%{_libdir}/kde3/libk3bffmpegdecoder.*}
-%{?ffmpeg:%{_datadir}/apps/k3b/plugins/k3bffmpegdecoder.plugin}
-%{_libdir}/kde3/libk3blameencoder.*
-%{_datadir}/apps/k3b/plugins/k3blameencoder.plugin
-%{_libdir}/kde3/libk3bmaddecoder.*
-%{_datadir}/apps/k3b/plugins/k3bmaddecoder.plugin
+%{_kde4_libdir}/kde4/k3bffmpegdecoder.so
+%{_kde4_libdir}/kde4/k3blameencoder.so
+%{_kde4_libdir}/kde4/k3bmaddecoder.so
+%{_kde4_libdir}/kde4/kcm_k3blameencoder.so
+%{_kde4_datadir}/kde4/services/k3bffmpegdecoder.desktop
+%{_kde4_datadir}/kde4/services/k3blameencoder.desktop
+%{_kde4_datadir}/kde4/services/k3bmaddecoder.desktop
+%{_kde4_datadir}/kde4/services/kcm_k3blameencoder.desktop
 
 
 %changelog
+* Fri Dec 18 2009 Rex Dieter <rdieter@fedoraproject.org> - 1.69.0-1
+- k3b-1.69.0 (alpha4)
+
 * Thu Oct 01 2009 Rex Dieter <rdieter@fedoraproject.org> - 1:1.0.5-7
 - Epoch: 1 (F-12 revert to k3b-1.0.5)
+
+* Wed Jun 17 2009 Rex Dieter <rdieter@fedoraproject.org> - 1.66.0-0.1.alpha2
+- k3b-1.66.0
 
 * Sun Mar 29 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 1.0.5-6
 - rebuild for new F11 features
