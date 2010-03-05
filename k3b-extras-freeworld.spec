@@ -1,10 +1,10 @@
 
-%define pre beta1 
+%define pre rc1 
 
 Name:    k3b-extras-freeworld
 Summary: Additional codec plugins for the k3b CD/DVD burning application
 Epoch:   1
-Version: 1.70.0
+Version: 1.90.0
 Release: 1%{?dist}
 
 Group:   Applications/Archiving
@@ -91,10 +91,13 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Mon Feb 01 2010 Rex Dieter <rdieter@fedoraproject.org> - 1.70.0-1
+* Fri Mar 05 2010 Rex Dieter <rdieter@fedoraproject.org> - 1:1.90.0-1
+- k3b.1.90.0 (rc1)
+
+* Mon Feb 01 2010 Rex Dieter <rdieter@fedoraproject.org> - 1:1.70.0-1
 - k3b-1.70.0 (beta1)
 
-* Fri Dec 18 2009 Rex Dieter <rdieter@fedoraproject.org> - 1.69.0-1
+* Fri Dec 18 2009 Rex Dieter <rdieter@fedoraproject.org> - 1:1.69.0-1
 - k3b-1.69.0 (alpha4)
 
 * Thu Oct 01 2009 Rex Dieter <rdieter@fedoraproject.org> - 1:1.0.5-7
