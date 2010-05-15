@@ -11,6 +11,10 @@ Group:   Applications/Archiving
 License: GPLv2+
 URL:     http://www.k3b.org/
 Source0: http://downloads.sourceforge.net/sourceforge/k3b/k3b-%{version}%{pre}.tar.bz2
+# fix build with Qt 4.7: http://websvn.kde.org/?view=revision&revision=1102482
+Patch0:  k3b-1.91.0-qt47.patch
+# fix build with FFmpeg 0.6 snapshots (define __STDC_CONSTANT_MACROS)
+Patch1:  k3b-1.91.0-ffmpeg06.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 # TODO: bugzilla/document
 ExcludeArch: s390 s390x
@@ -48,6 +52,8 @@ handle CD/DVD burning application.
 
 %prep
 %setup -q -n k3b-%{version}
+%patch0 -p0 -b .qt47
+%patch1 -p1 -b .ffmpeg06
 
 
 %build
@@ -93,6 +99,8 @@ rm -rf %{buildroot}
 %changelog
 * Sat May 15 2010 Kevin Kofler <Kevin@tigcc.ticalc.org> - 1:1.91.0-1
 - k3b-1.91.0 (rc2)
+- fix build with Qt 4.7 (upstream patch by cfeck)
+- fix build with FFmpeg 0.6 snapshots (define __STDC_CONSTANT_MACROS)
 
 * Fri Mar 05 2010 Rex Dieter <rdieter@fedoraproject.org> - 1:1.90.0-1
 - k3b-1.90.0 (rc1)
