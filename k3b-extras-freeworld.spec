@@ -1,16 +1,14 @@
 
-%define pre rc3
-
 Name:    k3b-extras-freeworld
 Summary: Additional codec plugins for the k3b CD/DVD burning application
 Epoch:   1
-Version: 1.92.0
+Version: 2.0.0 
 Release: 1%{?dist}
 
 Group:   Applications/Archiving
 License: GPLv2+
 URL:     http://www.k3b.org/
-Source0: http://downloads.sourceforge.net/sourceforge/k3b/k3b-%{version}%{pre}.tar.bz2
+Source0: http://downloads.sourceforge.net/sourceforge/k3b/k3b-%{version}%{?pre}.tar.bz2
 # fix build with FFmpeg 0.6 snapshots (define __STDC_CONSTANT_MACROS)
 Patch1:  k3b-1.91.0-ffmpeg06.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -94,6 +92,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Sat Jul 10 2010 Rex Dieter <rdieter@fedoraproject.org> - 1:2.0.0-1
+- k3b-2.0.0
+
 * Sun May 23 2010 Rex Dieter <rdieter@fedoraproject.org> - 1:1.92.0-1
 - k3b-1.92.0 (rc3)
 
