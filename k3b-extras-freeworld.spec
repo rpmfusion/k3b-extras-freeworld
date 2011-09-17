@@ -3,7 +3,7 @@ Name:    k3b-extras-freeworld
 Summary: Additional codec plugins for the k3b CD/DVD burning application
 Epoch:   1
 Version: 2.0.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 Group:   Applications/Archiving
 License: GPLv2+
@@ -37,8 +37,7 @@ BuildRequires:  lame-devel
 BuildRequires:  libdvdread-devel
 BuildRequires:  libmad-devel
 
-# The plugins only load in the exact version of K3b they come from.
-Requires:       k3b = %{epoch}:%{version}
+Requires:       k3b >= %{epoch}:%{version}
 
 
 %description
@@ -95,6 +94,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Sat Sep 17 2011 Kevin Kofler <Kevin@tigcc.ticalc.org> - 1:2.0.2-2
+- Requires: k3b >= %{epoch}:%{version} (plugins do load in newer versions, oops)
+
 * Sat Sep 17 2011 Kevin Kofler <Kevin@tigcc.ticalc.org> - 1:2.0.2-1
 - update to 2.0.2
 - Requires: k3b = %{epoch}:%{version} (plugins won't load in newer versions)
