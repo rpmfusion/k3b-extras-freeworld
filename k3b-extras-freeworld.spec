@@ -3,19 +3,21 @@ Name:    k3b-extras-freeworld
 Summary: Additional codec plugins for the k3b CD/DVD burning application
 Epoch:   1
 Version: 2.0.2
-Release: 2%{?dist}
+Release: 4%{?dist}
 
 Group:   Applications/Archiving
 License: GPLv2+
 URL:     http://www.k3b.org/
 Source0: http://downloads.sourceforge.net/sourceforge/k3b/k3b-%{version}%{?pre}.tar.bz2
-# fix build with FFmpeg 0.8 (#1960)
-Patch1:  k3b-2.0.2-ffmpeg08.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 # TODO: bugzilla/document
 ExcludeArch: s390 s390x
 
 ## upstreamable patches
+# fix build with FFmpeg 0.8 (#1960)
+Patch50: k3b-2.0.2-ffmpeg08.patch
+# kde-4.7+ FindFFMPEG.cmake uses FFMPEG_INCLUDE_DIRS (instead of FFMPEG_INCLUDE_DIR)
+Patch51: k3b-2.0.2-FFMPEG_INCLUDE_DIRS.patch
 
 BuildRequires: cmake
 BuildRequires: flac-devel
@@ -48,7 +50,9 @@ handle CD/DVD burning application.
 
 %prep
 %setup -q -n k3b-%{version}
-%patch1 -p1 -b .ffmpeg08
+
+%patch50 -p1 -b .ffmpeg08
+%patch51 -p1 -b .FFMPEG_INCLUDE_DIRS
 
 
 %build
@@ -92,6 +96,12 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Fri Feb 10 2012 Rex Dieter <rdieter@fedoraproject.org> 1:2.0.2-4
+- fix for newer FindFFMPEG.cmake
+
+* Wed Feb 08 2012 Nicolas Chauvet <kwizart@gmail.com> - 1:2.0.2-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Thu Sep 29 2011 Kevin Kofler <Kevin@tigcc.ticalc.org> - 1:2.0.2-2
 - fix build with FFmpeg 0.8 (#1960)
 
