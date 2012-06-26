@@ -3,7 +3,7 @@ Name:    k3b-extras-freeworld
 Summary: Additional codec plugins for the k3b CD/DVD burning application
 Epoch:   1
 Version: 2.0.2
-Release: 6%{?dist}
+Release: 7%{?dist}
 
 Group:   Applications/Archiving
 License: GPLv2+
@@ -96,6 +96,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Jun 26 2012 Nicolas Chauvet <kwizart@gmail.com> - 1:2.0.2-7
+- Rebuilt for FFmpeg
+
 * Fri Mar 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 1:2.0.2-6
 - Rebuilt for c++ ABI breakage
 
