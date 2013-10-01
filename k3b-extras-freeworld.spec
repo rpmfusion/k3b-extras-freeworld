@@ -1,4 +1,11 @@
 
+# undefine these to disable
+%if 0%{?fedora} < 20
+%define ffmpeg_decoder 1
+%endif
+%define lame_encoder 1
+%define mad_decoder 1 
+
 Name:    k3b-extras-freeworld
 Summary: Additional codec plugins for the k3b CD/DVD burning application
 Epoch:   1
@@ -37,9 +44,15 @@ BuildRequires: pkgconfig(taglib)
 BuildRequires: pkgconfig(vorbisenc) pkgconfig(vorbisfile)
 BuildRequires: pkgconfig(taglib)
 
+%if 0%{?ffmpeg_decoder}
 BuildRequires: pkgconfig(libavcodec) pkgconfig(libavformat)
+%endif
+%if 0%{?mad_decoder}
 BuildRequires: pkgconfig(mad)
+%endif
+%if 0%{?lame_encoder}
 BuildRequires: lame-devel
+%endif
 
 Requires: k3b >= %{epoch}:%{version}
 
@@ -60,34 +73,38 @@ handle CD/DVD burning application.
 mkdir -p %{_target_platform}
 pushd %{_target_platform}
 %{cmake_kde4} \
-  -DK3B_BUILD_FFMPEG_DECODER_PLUGIN:BOOL=ON \
-  -DK3B_BUILD_LAME_ENCODER_PLUGIN:BOOL=ON \
-  -DK3B_BUILD_MAD_DECODER_PLUGIN:BOOL=ON \
+  -DK3B_BUILD_FFMPEG_DECODER_PLUGIN:BOOL=%{?ffmpeg_decoder:ON}%{!?ffmpeg_decoder:OFF} \
+  -DK3B_BUILD_LAME_ENCODER_PLUGIN:BOOL=%{?lame_encoder:ON}%{!?lame_encoder:OFF} \
+  -DK3B_BUILD_MAD_DECODER_PLUGIN:BOOL=%{?mad_decoder:ON}%{!?mad_decoder:OFF} \
   ..
 popd
 
-#make %{?_smp_mflags} -C %{_target_platform}/libk3bdevice
-#make %{?_smp_mflags} -C %{_target_platform}/libk3b
-make %{?_smp_mflags} -C %{_target_platform}/plugins/decoder/ffmpeg
-make %{?_smp_mflags} -C %{_target_platform}/plugins/decoder/mp3
-make %{?_smp_mflags} -C %{_target_platform}/plugins/encoder/lame
+%{?ffmpeg_decoder:make %{?_smp_mflags} -C %{_target_platform}/plugins/decoder/ffmpeg}
+%{?mad_decoder:make %{?_smp_mflags} -C %{_target_platform}/plugins/decoder/mp3}
+%{?lame_encoder:make %{?_smp_mflags} -C %{_target_platform}/plugins/encoder/lame}
 
 
 %install
-make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/decoder/ffmpeg
-make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/decoder/mp3
-make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/encoder/lame
+%{?ffmpeg_decoder:make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/decoder/ffmpeg}
+%{?mad_decoder:make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/decoder/mp3}
+%{?lame_encoder:make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/encoder/lame}
 
 
 %files 
+%if 0%{?ffmpeg_decoder}
 %{_kde4_libdir}/kde4/k3bffmpegdecoder.so
-%{_kde4_libdir}/kde4/k3blameencoder.so
-%{_kde4_libdir}/kde4/k3bmaddecoder.so
-%{_kde4_libdir}/kde4/kcm_k3blameencoder.so
 %{_kde4_datadir}/kde4/services/k3bffmpegdecoder.desktop
+%endif
+%if 0%{?lame_encoder}
+%{_kde4_libdir}/kde4/k3blameencoder.so
+%{_kde4_libdir}/kde4/kcm_k3blameencoder.so
 %{_kde4_datadir}/kde4/services/k3blameencoder.desktop
-%{_kde4_datadir}/kde4/services/k3bmaddecoder.desktop
 %{_kde4_datadir}/kde4/services/kcm_k3blameencoder.desktop
+%endif
+%if 0%{?mad_decoder}
+%{_kde4_libdir}/kde4/k3bmaddecoder.so
+%{_kde4_datadir}/kde4/services/k3bmaddecoder.desktop
+%endif
 
 
 %changelog
