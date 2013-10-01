@@ -26,7 +26,7 @@ Patch312: 0312-Fix-K3B-to-build-with-recent-FFMPEG-versions.patch
 
 BuildRequires: desktop-file-utils
 BuildRequires: gettext
-BuildRequires: kdelibs4-devel
+BuildRequires: kdelibs4-devel phonon-backend-gstreamer
 %if 0%{?fedora} > 16 || 0%{?rhel} > 6
 BuildRequires: libkcddb-devel
 %else
