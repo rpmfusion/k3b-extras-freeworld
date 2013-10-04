@@ -1,5 +1,6 @@
 
 # undefine these to disable
+# upstream bug (with patch) fix for ffmpeg-2.x, http://bugs.kde.org/325486
 %if 0%{?fedora} < 20
 %define ffmpeg_decoder 1
 %endif
