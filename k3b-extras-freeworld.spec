@@ -1,15 +1,19 @@
 
+# undefine these to disable
+%define ffmpeg_decoder 1
+%define lame_encoder 1
+%define mad_decoder 1 
+
 Name:    k3b-extras-freeworld
 Summary: Additional codec plugins for the k3b CD/DVD burning application
 Epoch:   1
 Version: 2.0.2
-Release: 11%{?dist}
+Release: 14%{?dist}
 
-Group:   Applications/Archiving
 License: GPLv2+
 URL:     http://www.k3b.org/
 Source0: http://downloads.sourceforge.net/sourceforge/k3b/k3b-%{version}%{?pre}.tar.bz2
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
 # TODO: bugzilla/document
 ExcludeArch: s390 s390x
 
@@ -17,34 +21,49 @@ ExcludeArch: s390 s390x
 Patch244: 0244-Fixed-compilation-with-new-FFMPEG.patch
 Patch290: 0290-fix-for-newer-kde-4.7-FindFFMPEG.cmake.patch
 Patch312: 0312-Fix-K3B-to-build-with-recent-FFMPEG-versions.patch
+# rebased 0330 to apply to 2.0 branch
+Patch330: 0330-CMake-checks-for-FFmpeg-API-changes.patch
+Patch331: 0331-Introduce-a-macro-for-referencing-the-ffmpeg-codec.patch
 
-BuildRequires: cmake
-BuildRequires: flac-devel
+# https://git.reviewboard.kde.org/r/113295/
+# see also  http://bugs.kde.org/325486
+Patch500: k3b-ffmpeg-review-113295-1.patch
+
+BuildRequires: desktop-file-utils
 BuildRequires: gettext
-BuildRequires: kdelibs4-devel
+BuildRequires: kdelibs4-devel phonon-backend-gstreamer
+%if 0%{?fedora} > 16 || 0%{?rhel} > 6
+BuildRequires: libkcddb-devel
+%else
 BuildRequires: kdemultimedia-devel
-BuildRequires: libdvdread-devel
+%endif
 BuildRequires: libmpcdec-devel
-BuildRequires: libmusicbrainz-devel
-BuildRequires: libsamplerate-devel
-BuildRequires: libsndfile-devel
-BuildRequires: libvorbis-devel
+BuildRequires: pkgconfig(dvdread)
+BuildRequires: pkgconfig(flac++)
+BuildRequires: pkgconfig(libmusicbrainz)
 # needed by k3bsetup
-#BuildRequires: polkit-qt-devel
-BuildRequires: taglib-devel
+#BuildRequires: pkgconfig(polkit-qt-1)
+BuildRequires: pkgconfig(samplerate)
+BuildRequires: pkgconfig(sndfile)
+BuildRequires: pkgconfig(taglib)
+BuildRequires: pkgconfig(vorbisenc) pkgconfig(vorbisfile)
+BuildRequires: pkgconfig(taglib)
 
-BuildRequires:  ffmpeg-devel
-BuildRequires:  lame-devel
-BuildRequires:  libdvdread-devel
-BuildRequires:  libmad-devel
+%if 0%{?ffmpeg_decoder}
+BuildRequires: pkgconfig(libavcodec) pkgconfig(libavformat)
+%endif
+%if 0%{?mad_decoder}
+BuildRequires: pkgconfig(mad)
+%endif
+%if 0%{?lame_encoder}
+BuildRequires: lame-devel
+%endif
 
-Requires:       k3b >= %{epoch}:%{version}
-
+Requires: k3b >= %{epoch}:%{version}
 
 %description
 Additional decoder/encoder plugins for k3b, a feature-rich and easy to
 handle CD/DVD burning application.
-
 
 
 %prep
@@ -53,49 +72,60 @@ handle CD/DVD burning application.
 %patch244 -p1 -b .0244
 %patch290 -p1 -b .0290
 %patch312 -p1 -b .0313
+%patch330 -p1 -b .0330
+%patch331 -p1 -b .0331
+
+%patch500 -p1 -b .ffmpeg-review-113295-1
 
 
 %build
-
 mkdir -p %{_target_platform}
 pushd %{_target_platform}
 %{cmake_kde4} \
+  -DK3B_BUILD_FFMPEG_DECODER_PLUGIN:BOOL=%{?ffmpeg_decoder:ON}%{!?ffmpeg_decoder:OFF} \
+  -DK3B_BUILD_LAME_ENCODER_PLUGIN:BOOL=%{?lame_encoder:ON}%{!?lame_encoder:OFF} \
+  -DK3B_BUILD_MAD_DECODER_PLUGIN:BOOL=%{?mad_decoder:ON}%{!?mad_decoder:OFF} \
   ..
 popd
 
-#make %{?_smp_mflags} -C %{_target_platform}/libk3bdevice
-#make %{?_smp_mflags} -C %{_target_platform}/libk3b
-make %{?_smp_mflags} -C %{_target_platform}/plugins/decoder/ffmpeg
-make %{?_smp_mflags} -C %{_target_platform}/plugins/decoder/mp3
-make %{?_smp_mflags} -C %{_target_platform}/plugins/encoder/lame
-
+%{?ffmpeg_decoder:make %{?_smp_mflags} -C %{_target_platform}/plugins/decoder/ffmpeg}
+%{?mad_decoder:make %{?_smp_mflags} -C %{_target_platform}/plugins/decoder/mp3}
+%{?lame_encoder:make %{?_smp_mflags} -C %{_target_platform}/plugins/encoder/lame}
 
 
 %install
-rm -rf %{buildroot}
-
-make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/decoder/ffmpeg
-make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/decoder/mp3
-make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/encoder/lame
-
-
-%clean
-rm -rf %{buildroot}
+%{?ffmpeg_decoder:make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/decoder/ffmpeg}
+%{?mad_decoder:make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/decoder/mp3}
+%{?lame_encoder:make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/encoder/lame}
 
 
 %files 
-%defattr(-,root,root,-)
+%if 0%{?ffmpeg_decoder}
 %{_kde4_libdir}/kde4/k3bffmpegdecoder.so
-%{_kde4_libdir}/kde4/k3blameencoder.so
-%{_kde4_libdir}/kde4/k3bmaddecoder.so
-%{_kde4_libdir}/kde4/kcm_k3blameencoder.so
 %{_kde4_datadir}/kde4/services/k3bffmpegdecoder.desktop
+%endif
+%if 0%{?lame_encoder}
+%{_kde4_libdir}/kde4/k3blameencoder.so
+%{_kde4_libdir}/kde4/kcm_k3blameencoder.so
 %{_kde4_datadir}/kde4/services/k3blameencoder.desktop
-%{_kde4_datadir}/kde4/services/k3bmaddecoder.desktop
 %{_kde4_datadir}/kde4/services/kcm_k3blameencoder.desktop
+%endif
+%if 0%{?mad_decoder}
+%{_kde4_libdir}/kde4/k3bmaddecoder.so
+%{_kde4_datadir}/kde4/services/k3bmaddecoder.desktop
+%endif
 
 
 %changelog
+* Fri Nov 01 2013 Rex Dieter <rdieter@fedoraproject.org> 1:2.0.2-14
+- re-enable ffmpeg support (kde-bug#325486,kde-review#113295)
+
+* Tue Oct 01 2013 Rex Dieter <rdieter@fedoraproject.org> 1:2.0.2-13
+- cleanup/rebuild
+
+* Thu Aug 15 2013 Nicolas Chauvet <kwizart@gmail.com> - 1:2.0.2-12
+- Rebuilt for FFmpeg 2.0.x
+
 * Sun May 26 2013 Nicolas Chauvet <kwizart@gmail.com> - 1:2.0.2-11
 - Rebuilt for x264/FFmpeg
 
