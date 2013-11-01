@@ -1,9 +1,6 @@
 
 # undefine these to disable
-# upstream bug (with patch) fix for ffmpeg-2.x, http://bugs.kde.org/325486
-%if 0%{?fedora} < 20
 %define ffmpeg_decoder 1
-%endif
 %define lame_encoder 1
 %define mad_decoder 1 
 
@@ -11,7 +8,7 @@ Name:    k3b-extras-freeworld
 Summary: Additional codec plugins for the k3b CD/DVD burning application
 Epoch:   1
 Version: 2.0.2
-Release: 13%{?dist}
+Release: 14%{?dist}
 
 License: GPLv2+
 URL:     http://www.k3b.org/
@@ -24,6 +21,13 @@ ExcludeArch: s390 s390x
 Patch244: 0244-Fixed-compilation-with-new-FFMPEG.patch
 Patch290: 0290-fix-for-newer-kde-4.7-FindFFMPEG.cmake.patch
 Patch312: 0312-Fix-K3B-to-build-with-recent-FFMPEG-versions.patch
+# rebased 0330 to apply to 2.0 branch
+Patch330: 0330-CMake-checks-for-FFmpeg-API-changes.patch
+Patch331: 0331-Introduce-a-macro-for-referencing-the-ffmpeg-codec.patch
+
+# https://git.reviewboard.kde.org/r/113295/
+# see also  http://bugs.kde.org/325486
+Patch500: k3b-ffmpeg-review-113295-1.patch
 
 BuildRequires: desktop-file-utils
 BuildRequires: gettext
@@ -68,6 +72,10 @@ handle CD/DVD burning application.
 %patch244 -p1 -b .0244
 %patch290 -p1 -b .0290
 %patch312 -p1 -b .0313
+%patch330 -p1 -b .0330
+%patch331 -p1 -b .0331
+
+%patch500 -p1 -b .ffmpeg-review-113295-1
 
 
 %build
@@ -109,6 +117,9 @@ popd
 
 
 %changelog
+* Fri Nov 01 2013 Rex Dieter <rdieter@fedoraproject.org> 1:2.0.2-14
+- re-enable ffmpeg support (kde-bug#325486,kde-review#113295)
+
 * Tue Oct 01 2013 Rex Dieter <rdieter@fedoraproject.org> 1:2.0.2-13
 - cleanup/rebuild
 
