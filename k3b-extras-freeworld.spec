@@ -8,7 +8,7 @@ Name:    k3b-extras-freeworld
 Summary: Additional codec plugins for the k3b CD/DVD burning application
 Epoch:   1
 Version: 2.0.2
-Release: 16%{?dist}
+Release: 17%{?dist}
 
 License: GPLv2+
 URL:     http://www.k3b.org/
@@ -117,6 +117,9 @@ popd
 
 
 %changelog
+* Thu Sep 25 2014 Rex Dieter <rdieter@fedoraproject.org> 1:2.0.2-17
+- rebuild (ffmpeg-2.4)
+
 * Thu Aug 07 2014 Sérgio Basto <sergio@serjux.com> - 1:2.0.2-16
 - Rebuilt for ffmpeg-2.3
 
