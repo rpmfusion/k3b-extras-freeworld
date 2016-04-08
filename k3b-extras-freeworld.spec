@@ -8,7 +8,7 @@ Name:    k3b-extras-freeworld
 Summary: Additional codec plugins for the k3b CD/DVD burning application
 Epoch:   1
 Version: 2.0.2
-Release: 21%{?dist}
+Release: 22%{?dist}
 
 License: GPLv2+
 URL:     http://www.k3b.org/
@@ -40,7 +40,6 @@ BuildRequires: kdemultimedia-devel
 BuildRequires: libmpcdec-devel
 BuildRequires: pkgconfig(dvdread)
 BuildRequires: pkgconfig(flac++)
-BuildRequires: pkgconfig(libmusicbrainz)
 # needed by k3bsetup
 #BuildRequires: pkgconfig(polkit-qt-1)
 BuildRequires: pkgconfig(samplerate)
@@ -117,6 +116,9 @@ popd
 
 
 %changelog
+* Fri Apr 08 2016 Adrian Reber <adrian@lisas.de> - 1:2.0.2-22
+- remove BR: pkgconfig(libmusicbrainz); package retired in F24
+
 * Mon Oct 20 2014 Sérgio Basto <sergio@serjux.com> - 1:2.0.2-21
 - Rebuilt for FFmpeg 2.4.3
 
