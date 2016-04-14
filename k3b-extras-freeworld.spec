@@ -7,23 +7,15 @@
 Name:    k3b-extras-freeworld
 Summary: Additional codec plugins for the k3b CD/DVD burning application
 Epoch:   1
-Version: 2.0.2
-Release: 22%{?dist}
+Version: 2.0.3
+Release: 1%{?dist}
 
 License: GPLv2+
 URL:     http://www.k3b.org/
-Source0: http://downloads.sourceforge.net/sourceforge/k3b/k3b-%{version}%{?pre}.tar.bz2
+Source0: http://download.kde.org/stable/k3b/k3b-%{version}.tar.xz
 
 # TODO: bugzilla/document
 ExcludeArch: s390 s390x
-
-# upstream patches
-Patch244: 0244-Fixed-compilation-with-new-FFMPEG.patch
-Patch290: 0290-fix-for-newer-kde-4.7-FindFFMPEG.cmake.patch
-Patch312: 0312-Fix-K3B-to-build-with-recent-FFMPEG-versions.patch
-# rebased 0330 to apply to 2.0 branch
-Patch330: 0330-CMake-checks-for-FFmpeg-API-changes.patch
-Patch331: 0331-Introduce-a-macro-for-referencing-the-ffmpeg-codec.patch
 
 # https://git.reviewboard.kde.org/r/113295/
 # see also  http://bugs.kde.org/325486
@@ -68,13 +60,8 @@ handle CD/DVD burning application.
 %prep
 %setup -q -n k3b-%{version}
 
-%patch244 -p1 -b .0244
-%patch290 -p1 -b .0290
-%patch312 -p1 -b .0313
-%patch330 -p1 -b .0330
-%patch331 -p1 -b .0331
-
-%patch500 -p1 -b .ffmpeg-review-113295-1
+# hack around cmake-related FTBFS
+sed -i.cmakehack -e "s|^cmake_minimum_required|#cmake_minimum_required|" CMakeLists.txt
 
 
 %build
@@ -116,6 +103,12 @@ popd
 
 
 %changelog
+* Thu Apr 14 2016 Sérgio Basto <sergio@serjux.com> - 1:2.0.3-1
+- Update to 2.0.3 .
+- Drop all 5 upstream patches .
+- Add hack around cmake-related FTBFS .
+- Use a new Source URL.
+
 * Fri Apr 08 2016 Adrian Reber <adrian@lisas.de> - 1:2.0.2-22
 - remove BR: pkgconfig(libmusicbrainz); package retired in F24
 
