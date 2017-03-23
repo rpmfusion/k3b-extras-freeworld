@@ -8,7 +8,7 @@ Name:    k3b-extras-freeworld
 Summary: Additional codec plugins for the k3b CD/DVD burning application
 Epoch:   1
 Version: 2.0.3
-Release: 4%{?dist}
+Release: 5%{?dist}
 
 License: GPLv2+
 URL:     http://www.k3b.org/
@@ -21,6 +21,7 @@ ExcludeArch: s390 s390x
 # see also  http://bugs.kde.org/325486
 Patch500: k3b-ffmpeg3.patch
 Patch501: k3b-2.0.3-gcc6.patch
+Patch502: k3b-2.0.3-gcc7.patch
 
 BuildRequires: desktop-file-utils
 BuildRequires: gettext
@@ -59,9 +60,7 @@ handle CD/DVD burning application.
 
 
 %prep
-%setup -q -n k3b-%{version}
-%patch500 -p1
-%patch501 -p1
+%autosetup -p1 -n k3b-%{version}
 
 # hack around cmake-related FTBFS
 sed -i.cmakehack -e "s|^cmake_minimum_required|#cmake_minimum_required|" CMakeLists.txt
@@ -106,6 +105,9 @@ popd
 
 
 %changelog
+* Thu Mar 23 2017 Leigh Scott <leigh123linux@googlemail.com> - 1:2.0.3-5
+- Patch for gcc7
+
 * Sun Mar 19 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 1:2.0.3-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
