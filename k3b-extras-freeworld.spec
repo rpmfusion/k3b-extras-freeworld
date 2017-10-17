@@ -1,7 +1,7 @@
 Name:    k3b-extras-freeworld
 Summary: Provides ffmpeg decoder plugin for the k3b CD/DVD burning application
 Epoch:   1
-Version: 17.08.1
+Version: 17.08.2
 Release: 1%{?dist}
 
 License: GPLv2+
@@ -76,6 +76,9 @@ make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/decoder/ff
 
 
 %changelog
+* Tue Oct 17 2017 Leigh Scott <leigh123linux@googlemail.com> - 1:17.08.2-1
+- Update to 17.08.2
+
 * Wed Oct 11 2017 Leigh Scott <leigh123linux@googlemail.com> - 1:17.08.1-1
 - Update to 17.08.1
 
