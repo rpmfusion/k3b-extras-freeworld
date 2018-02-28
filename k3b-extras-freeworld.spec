@@ -1,8 +1,8 @@
 Name:    k3b-extras-freeworld
 Summary: Provides ffmpeg decoder plugin for the k3b CD/DVD burning application
 Epoch:   1
-Version: 17.08.3
-Release: 2%{?dist}
+Version: 17.12.2
+Release: 1%{?dist}
 
 License: GPLv2+
 URL:     http://www.k3b.org/
@@ -46,6 +46,7 @@ BuildRequires: pkgconfig(taglib)
 BuildRequires: pkgconfig(vorbisenc) pkgconfig(vorbisfile)
 BuildRequires: pkgconfig(libavcodec) pkgconfig(libavformat)
 
+# the abi is fairly stable, consider relaxing this -- rex
 Requires: k3b >= %{epoch}:%{version}
 
 %description
@@ -54,10 +55,11 @@ handle CD/DVD burning application.
 
 
 %prep
-%autosetup -p1 -n k3b-%{version}
+%autosetup -n k3b-%{version} -p1
+
 
 %build
-mkdir -p %{_target_platform}
+mkdir %{_target_platform}
 pushd %{_target_platform}
 %{cmake_kf5} .. \
   -DK3B_BUILD_FFMPEG_DECODER_PLUGIN:BOOL=ON
@@ -76,6 +78,9 @@ make install/fast DESTDIR=%{buildroot} -C %{_target_platform}/plugins/decoder/ff
 
 
 %changelog
+* Wed Feb 28 2018 Rex Dieter <rdieter@fedoraproject.org> - 1:17.12.2-1
+- 17.12.2
+
 * Thu Jan 18 2018 Leigh Scott <leigh123linux@googlemail.com> - 1:17.08.3-2
 - Rebuilt for ffmpeg-3.5 git
 
